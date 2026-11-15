@@ -1,0 +1,146 @@
+# Configuração do agente (sem segredos: eles ficam no .env).
+# Depois de editar, aplique com: ./odonto.sh restart  (não precisa reconstruir a imagem).
+# Horários SEMPRE entre aspas ("08:00"): no YAML, 12:00 sem aspas vira um número.
+
+# Fuso do consultório (IANA). Se vazio, usa a variável TZ; senão America/Sao_Paulo.
+fuso: "America/Sao_Paulo"
+
+consultorio:
+  nome: "Consultório Odontológico"
+  endereco: "Rua Exemplo, 123 - Centro"
+
+conversa:
+  # Conversa parada há mais tempo que isso é encerrada e recomeça do início.
+  expiracao_minutos: 120
+  # Respostas inválidas seguidas na mesma etapa antes de passar para a equipe.
+  max_tentativas_por_etapa: 3
+  # Textos enviados ao paciente. Placeholders: NOME_CONSULTORIO, NOME_PACIENTE, DATA_HORA,
+  # ENDERECO, PRONTUARIO. Chaves omitidas usam o texto padrão do código.
+  mensagens:
+    boas_vindas: "Olá! Aqui é o assistente automático do NOME_CONSULTORIO. Para começar, informe o número do seu RG e a UF do órgão emissor (exemplo: 12.345.678-9 SP)."
+    paciente_encontrado: "Olá, NOME_PACIENTE! Que bom falar com você de novo. Conte, em poucas palavras, qual é o problema ou o motivo da consulta."
+    consulta_futura: "Olá, NOME_PACIENTE! Você já tem uma consulta agendada para DATA_HORA. Deseja agendar outra consulta? Responda SIM ou NÃO."
+    nova_consulta_recusada: "Combinado! Mantivemos sua consulta de DATA_HORA. Até lá!"
+    pedir_problema: "Certo! Conte, em poucas palavras, qual é o problema ou o motivo da nova consulta."
+    pedir_nome: "Não encontrei cadastro com esse RG. Vamos fazer agora, é rápido. Qual é o seu nome completo?"
+    pedir_data_nascimento: "Qual é a sua data de nascimento? (dd/mm/aaaa)"
+    pedir_responsavel: "Como o paciente é menor de idade, informe o nome completo do responsável legal."
+    pedir_consentimento: "Para fazer seu cadastro e seu prontuário, o NOME_CONSULTORIO vai armazenar seus dados pessoais e de saúde com segurança, conforme a LGPD, e usar um sistema automatizado com inteligência artificial para organizar o atendimento. Você concorda? Responda SIM ou NÃO."
+    sem_consentimento: "Tudo bem, sua escolha foi registrada. Para agendar sem o cadastro pelo WhatsApp, ligue para o consultório ou aguarde: a equipe vai entrar em contato."
+    cadastro_concluido: "Cadastro concluído! Seu prontuário é o PRONTUARIO. Agora conte, em poucas palavras, qual é o problema ou o motivo da consulta."
+    emergencia: "Pelo que você descreveu, pode ser uma emergência. Se houver dificuldade para respirar ou engolir, ou inchaço que se espalha pelo rosto ou pescoço, procure agora um pronto-socorro ou ligue para o SAMU (192). O consultório já foi avisado com prioridade."
+    pedir_data_hora: "Entendi. Para quando você gostaria de agendar? Pode escrever do seu jeito, por exemplo: amanhã às 14h, sexta de manhã, 25/11 às 10h."
+    horario_indisponivel: "Esse horário não está disponível. O horário livre mais próximo é DATA_HORA. Posso confirmar? Responda SIM, ou sugira outra data e horário."
+    sugestao_horario: "O primeiro horário livre é DATA_HORA. Posso confirmar? Responda SIM, ou sugira outra data e horário."
+    agendado: "Consulta agendada para DATA_HORA, no endereço ENDERECO. Chegue com 10 minutos de antecedência e traga um documento com foto. Até lá!"
+    sem_horario: "No momento não há horários livres nos próximos dias. A equipe do NOME_CONSULTORIO vai entrar em contato para combinar o melhor horário."
+    nao_entendi: "Desculpe, não entendi."
+    atendimento_humano: "Não consegui concluir o atendimento automático. A equipe do NOME_CONSULTORIO vai entrar em contato com você assim que possível."
+    pedir_texto: "Desculpe, não consigo entender esse tipo de mensagem por aqui. Por favor, responda com uma mensagem de texto."
+  # Dica acrescentada ao "não entendi" de cada etapa.
+  dicas:
+    AGUARDANDO_RG: "Informe o número do RG e a UF do órgão emissor (exemplo: 12.345.678-9 SP)."
+    AGUARDANDO_NOME: "Informe o nome completo, com nome e sobrenome (exemplo: Maria da Silva)."
+    AGUARDANDO_DATA_NASCIMENTO: "Informe a data de nascimento no formato dd/mm/aaaa (exemplo: 15/03/1990)."
+    AGUARDANDO_RESPONSAVEL: "Informe o nome completo do responsável legal (exemplo: Ana Paula Souza)."
+    AGUARDANDO_CONSENTIMENTO: "Você concorda com o cadastro? Responda SIM ou NÃO."
+    AGUARDANDO_DECISAO_NOVA_CONSULTA: "Deseja agendar outra consulta? Responda SIM ou NÃO."
+    AGUARDANDO_PROBLEMA: "Conte, em poucas palavras, qual é o problema (exemplo: dor de dente ao mastigar)."
+    AGUARDANDO_DATA_HORA: "Escreva a data e o horário desejados (exemplos: amanhã às 14h, sexta de manhã, 25/11 às 10h)."
+    AGUARDANDO_CONFIRMACAO_SUGESTAO: "Responda SIM para confirmar o horário sugerido, ou escreva outra data e horário."
+
+classificacao:
+  # Abaixo desta confiança a queixa fica como "a avaliar" (o dentista reclassifica pela API).
+  confianca_minima: 0.6
+  # Expressões (sem acento, minúsculas) que marcam emergência e avisam o consultório na hora.
+  palavras_alarme:
+    - "falta de ar"
+    - "dificuldade para respirar"
+    - "dificuldade de respirar"
+    - "dificuldade pra respirar"
+    - "nao consigo respirar"
+    - "sem conseguir respirar"
+    - "dificuldade para engolir"
+    - "dificuldade de engolir"
+    - "dificuldade pra engolir"
+    - "nao consigo engolir"
+    - "sem conseguir engolir"
+    - "rosto inchado"
+    - "rosto inchando"
+    - "rosto esta inchado"
+    - "cara inchada"
+    - "cara esta inchada"
+    - "face inchada"
+    - "inchaco no rosto"
+    - "inchaco na cara"
+    - "inchaco na face"
+    - "inchou o rosto"
+    - "inchou a cara"
+    - "pescoco inchado"
+    - "inchaco no pescoco"
+    - "olho inchado"
+    - "olho fechando"
+    - "febre alta"
+    - "sangramento que nao para"
+    - "sangramento nao para"
+    - "sangue nao para"
+    - "nao para de sangrar"
+    - "sangrando sem parar"
+    - "sangra sem parar"
+    - "hemorragia"
+    - "dente caiu"
+    - "dente da frente caiu"
+    - "caiu o dente"
+    - "caiu meu dente"
+    - "dente arrancado"
+    - "arrancou o dente"
+    - "arrancou meu dente"
+    - "bati o dente"
+    - "bateu o dente"
+    - "bati a boca"
+    - "bateu a boca"
+    - "acidente"
+    - "trauma"
+    - "traumatismo"
+    - "pancada"
+
+agendamento:
+  duracao_minutos: 30
+  dias_atendimento: [SEG, TER, QUA, QUI, SEX]
+  abertura: "08:00"
+  fechamento: "18:00"
+  # Para não ter intervalo de almoço, use null nos dois.
+  almoco_inicio: "12:00"
+  almoco_fim: "13:00"
+  antecedencia_minima_horas: 2
+  dias_busca_maxima: 60
+  # true: pergunta antes de agendar o horário sugerido; false: agenda direto e avisa.
+  confirmar_sugestao: true
+  # Dias sem atendimento (AAAA-MM-DD). Inclua os feriados municipais e estaduais.
+  feriados:
+    - 2026-11-02  # Finados
+    - 2026-11-15  # Proclamação da República
+    - 2026-11-20  # Consciência Negra
+    - 2026-12-25  # Natal
+    - 2027-01-01  # Confraternização Universal
+    - 2027-02-08  # Carnaval
+    - 2027-02-09  # Carnaval
+    - 2027-03-26  # Sexta-feira Santa
+    - 2027-04-21  # Tiradentes
+    - 2027-05-01  # Dia do Trabalho
+    - 2027-05-27  # Corpus Christi
+    - 2027-09-07  # Independência
+    - 2027-10-12  # Nossa Senhora Aparecida
+    - 2027-11-02  # Finados
+    - 2027-11-15  # Proclamação da República
+    - 2027-11-20  # Consciência Negra
+    - 2027-12-25  # Natal
+
+retencao:
+  # Texto das mensagens trocadas é apagado após N dias (o prontuário não é apagado).
+  mensagens_dias: 90
+  horario: "03:30"
+
+api:
+  # Swagger em /docs (exige ADMIN_TOKEN). Deixe false em produção.
+  docs_habilitada: false
