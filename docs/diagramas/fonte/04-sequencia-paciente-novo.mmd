@@ -1,0 +1,62 @@
+sequenceDiagram
+    autonumber
+    actor P as Paciente
+    participant M as Meta (WhatsApp Cloud API)
+    participant W as Webhook (FastAPI)
+    participant F as Fila + ConsumidorFila
+    participant C as ConduzirConversaService
+    participant D as Conversa (domínio)
+    participant BD as PostgreSQL
+    participant IA as Claude (Anthropic)
+    participant N as NotificarConsultorioService
+    actor R as Recepção
+
+    P->>M: "Oi, quero marcar uma consulta"
+    M->>W: POST /webhook/whatsapp (X-Hub-Signature-256)
+    W->>W: valida HMAC do corpo bruto
+    W->>BD: grava mensagem (texto cifrado, wa_message_id único)
+    W->>F: enfileira mensagem_id
+    W-->>M: 200 OK (rápido)
+    F->>C: processa (trava por número)
+    C->>D: Conversa.iniciar
+    C-->>M: boas-vindas: pede RG e UF
+    M-->>P: mensagem
+
+    P->>M: "12.345.678-9 SP"
+    M->>W: webhook
+    W->>F: enfileira
+    F->>C: processa
+    C->>D: registrar_resposta → BuscarPaciente
+    C->>BD: busca por rg_hash = HMAC(RG + UF)
+    BD-->>C: não encontrado
+    C->>D: paciente_nao_encontrado → AGUARDANDO_NOME
+    C-->>P: "Qual é o seu nome completo?"
+
+    P->>C: "Maria da Silva" (via Meta, webhook e fila)
+    C-->>P: "Qual é a sua data de nascimento?"
+    P->>C: "15/03/1990"
+    C-->>P: pedido de consentimento LGPD
+    P->>C: "Sim"
+    C->>D: CadastrarPaciente
+    C->>BD: paciente (dados cifrados) + telefone + prontuário PR-000001
+    C-->>P: "Cadastro concluído! Qual é o problema?"
+
+    P->>C: "Estou com dor de dente ao mastigar"
+    C->>D: ClassificarQueixa
+    C->>C: DetectorSinaisAlarme (sem alarme)
+    C->>IA: só o texto da queixa + catálogo (saída estruturada)
+    IA-->>C: DOR_DE_DENTE, confiança 0,9
+    C->>BD: queixa_relatada (texto cifrado, URGENCIA)
+    C-->>P: "Para quando você gostaria de agendar?"
+
+    P->>C: "Amanhã às 10h"
+    C->>C: interpretador local (regex) e, se preciso, Claude
+    C->>BD: monta a Agenda (consultas e bloqueios)
+    C->>C: Agenda.resolver → horário livre
+    C->>BD: consulta AGENDADA (índice único parcial em inicio)
+    C->>BD: commit + evento ConsultaAgendada
+    C-->>P: "Consulta agendada para terça, 17/11 às 10:00"
+    BD-->>F: evento publicado após o commit
+    F->>N: ConsultaAgendada
+    N->>R: template novo_agendamento (WhatsApp)
+    N->>R: e-mail (se SMTP configurado) e log

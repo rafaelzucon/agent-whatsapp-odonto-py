@@ -1,0 +1,52 @@
+%% Camadas da Clean Architecture: as setas indicam "importa" (sempre para dentro).
+flowchart TB
+    subgraph INFRA["infraestrutura (frameworks, configuração e composição)"]
+        direction LR
+        servidor["servidor.py<br/>Uvicorn, 1 worker"]
+        app["app.py<br/>FastAPI + ciclo de vida"]
+        container["container.py<br/>raiz de composição"]
+        config["config.py<br/>pydantic-settings + YAML"]
+        logs["logs.py<br/>JSON em uma linha"]
+    end
+
+    subgraph ADAPT["adaptador"]
+        direction LR
+        subgraph ENTRADA["entrada"]
+            web["web: webhook, agenda,<br/>pacientes, erros"]
+            fila_in["fila: ConsumidorFila"]
+            agendador["agendador: APScheduler"]
+        end
+        subgraph SAIDA["saída"]
+            persist["persistencia: SQLAlchemy,<br/>UoW, AES-GCM, HMAC"]
+            whats["whatsapp: Cloud API (httpx)"]
+            ia["ia: Anthropic"]
+            transc["transcricao: OpenAI"]
+            notif["notificacao: WhatsApp,<br/>e-mail, log"]
+            fila_out["fila: FilaAsyncio"]
+            relogio["relogio: RelogioSistema"]
+        end
+    end
+
+    subgraph APP["aplicacao (casos de uso e portas)"]
+        direction LR
+        portas_in["portas.entrada<br/>*UseCase, comandos, DTOs"]
+        casos["casos_de_uso<br/>*Service"]
+        portas_out["portas.saida<br/>Repositorio, UnidadeDeTrabalho,<br/>EnviadorWhatsApp, ClassificadorProblemaIA..."]
+    end
+
+    subgraph DOM["dominio (só biblioteca padrão)"]
+        direction LR
+        modelo["modelo: Paciente, Prontuario,<br/>QueixaRelatada, Consulta, Conversa"]
+        servico["servico: Agenda, ValidadorDados,<br/>ClassificadorPalavraChave,<br/>DetectorSinaisAlarme"]
+    end
+
+    INFRA --> ADAPT
+    INFRA --> APP
+    web --> portas_in
+    fila_in --> portas_in
+    agendador --> portas_in
+    casos -. implementa .-> portas_in
+    casos --> portas_out
+    SAIDA -. implementa .-> portas_out
+    APP --> DOM
+    ADAPT --> DOM

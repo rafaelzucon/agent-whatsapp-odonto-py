@@ -1,0 +1,97 @@
+erDiagram
+    PACIENTE ||--o{ PACIENTE_TELEFONE : "tem"
+    PACIENTE ||--|| PRONTUARIO : "tem"
+    PRONTUARIO ||--o{ QUEIXA_RELATADA : "registra"
+    PROBLEMA_ODONTOLOGICO ||--o{ QUEIXA_RELATADA : "classifica"
+    PACIENTE ||--o{ CONSULTA : "agenda"
+    QUEIXA_RELATADA |o--o| CONSULTA : "motiva"
+
+    PACIENTE {
+        uuid id PK
+        varchar rg_hash UK "HMAC-SHA256(RG+UF)"
+        text rg_cifrado "AES-256-GCM"
+        text nome_cifrado "AES-256-GCM"
+        text data_nascimento_cifrada "AES-256-GCM"
+        text responsavel_cifrado "AES-256-GCM, menor de 18"
+        boolean consentimento_lgpd
+        timestamptz consentimento_em
+        timestamptz cadastrado_em
+    }
+    PACIENTE_TELEFONE {
+        int id PK
+        uuid paciente_id FK
+        varchar wa_id
+        timestamptz vinculado_em
+    }
+    PRONTUARIO {
+        uuid id PK
+        uuid paciente_id FK,UK
+        int numero UK "sequência: PR-000001"
+        timestamptz aberto_em
+    }
+    QUEIXA_RELATADA {
+        uuid id PK
+        uuid prontuario_id FK
+        text texto_cifrado "AES-256-GCM"
+        varchar problema_codigo FK
+        varchar prioridade
+        float confianca
+        varchar origem "IA, PALAVRA_CHAVE, MANUAL"
+        text sintomas_cifrados
+        timestamptz registrada_em
+        timestamptz reclassificada_em
+        uuid consulta_id FK
+    }
+    PROBLEMA_ODONTOLOGICO {
+        varchar codigo PK
+        varchar nome
+        text descricao
+        varchar especialidade
+        varchar prioridade
+        varchar cid10
+        json palavras_chave
+        boolean ativo
+        int ordem
+    }
+    CONSULTA {
+        uuid id PK
+        uuid paciente_id FK
+        uuid queixa_id FK
+        timestamptz inicio "único entre AGENDADA"
+        timestamptz fim
+        varchar status
+        varchar prioridade
+        varchar origem
+        timestamptz agendada_em
+        timestamptz atualizada_em
+    }
+    BLOQUEIO_AGENDA {
+        uuid id PK
+        timestamptz inicio
+        timestamptz fim
+        varchar motivo
+        timestamptz criado_em
+    }
+    CONVERSA {
+        uuid id PK
+        varchar wa_id UK
+        varchar etapa
+        text dados_cifrados "AES-256-GCM"
+        int tentativas_invalidas
+        timestamptz ultima_interacao
+        timestamptz iniciada_em
+        timestamptz encerrada_em
+    }
+    MENSAGEM {
+        uuid id PK
+        varchar wa_id
+        varchar direcao "RECEBIDA, ENVIADA"
+        varchar tipo
+        text texto_cifrado "AES-256-GCM"
+        varchar wa_message_id UK "idempotência"
+        varchar midia_id
+        boolean automatica
+        timestamptz momento
+        timestamptz criada_em
+        timestamptz processada_em "NULL = pendente"
+    }

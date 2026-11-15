@@ -1,0 +1,55 @@
+%% DFD nível 1: processos (círculos) e depósitos de dados (tabelas do PostgreSQL).
+flowchart LR
+    meta(["Meta"])
+    claude(["Claude"])
+    openai(["OpenAI"])
+    recepcao(["Recepção"])
+    smtp(["SMTP"])
+
+    p1(("1<br/>Receber mensagens"))
+    p2(("2<br/>Conduzir conversa"))
+    p3(("3<br/>Identificar e<br/>cadastrar paciente"))
+    p4(("4<br/>Registrar queixa"))
+    p5(("5<br/>Agendar consulta"))
+    p6(("6<br/>Notificar consultório"))
+    p7(("7<br/>Gerenciar agenda<br/>e prontuário"))
+    p8(("8<br/>Manutenção:<br/>expirar e expurgar"))
+
+    d1[("D1 mensagem")]
+    d2[("D2 conversa")]
+    d3[("D3 paciente e<br/>paciente_telefone")]
+    d4[("D4 prontuario e<br/>queixa_relatada")]
+    d5[("D5 problema_odontologico")]
+    d6[("D6 consulta e<br/>bloqueio_agenda")]
+
+    meta -- "webhook" --> p1
+    p1 -- "texto cifrado, pendente" --> d1
+    p1 -- "id da mensagem (fila em memória)" --> p2
+    d1 -- "mensagem pendente" --> p2
+    p2 -- "midia_id" --> meta
+    p2 -- "áudio" --> openai
+    openai -- "transcrição" --> p2
+    p2 <-- "etapa e dados cifrados" --> d2
+    p2 -- "RG + UF, nome, nascimento" --> p3
+    p3 <-- "rg_hash, dados cifrados" --> d3
+    p3 -- "abre prontuário" --> d4
+    p2 -- "texto da queixa" --> p4
+    d5 -- "catálogo ativo" --> p4
+    p4 -- "texto da queixa" --> claude
+    claude -- "código e confiança" --> p4
+    p4 -- "queixa classificada" --> d4
+    p2 -- "data e hora" --> claude
+    p2 -- "preferência de horário" --> p5
+    d6 -- "ocupação" --> p5
+    p5 -- "consulta AGENDADA" --> d6
+    p2 -- "respostas" --> meta
+    p4 -- "EmergenciaDetectada" --> p6
+    p5 -- "ConsultaAgendada" --> p6
+    p6 -- "template" --> meta
+    p6 -- "e-mail" --> smtp
+    recepcao -- "X-Admin-Token" --> p7
+    p7 <--> d6
+    p7 <--> d4
+    p7 -- "consulta (busca por RG)" --> d3
+    p8 -- "encerra conversas inativas" --> d2
+    p8 -- "apaga texto das mensagens > 90 dias (configurável)" --> d1

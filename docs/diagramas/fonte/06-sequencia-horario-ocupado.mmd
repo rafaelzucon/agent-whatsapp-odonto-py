@@ -1,0 +1,40 @@
+sequenceDiagram
+    autonumber
+    actor P as Paciente
+    participant C as ConduzirConversaService
+    participant AG as Agenda (domínio)
+    participant A as AgendarConsultaService
+    participant BD as PostgreSQL
+
+    P->>C: "Quinta às 15h"
+    C->>AG: resolver(quinta 15:00)
+    AG-->>C: HorarioSugerido(quinta 15:30, HORARIO_INDISPONIVEL)
+
+    alt confirmar_sugestao = true (padrão)
+        C-->>P: "Esse horário não está disponível. O mais próximo é quinta às 15:30. Posso confirmar?"
+        alt paciente responde SIM
+            P->>C: "Sim"
+            C->>A: AgendarConsultaCommand(quinta 15:30)
+        else paciente sugere outra data
+            P->>C: "Sexta às 9h"
+            C->>AG: resolver(sexta 09:00)
+        else paciente responde NÃO
+            P->>C: "Não"
+            C-->>P: "Para quando você gostaria de agendar?"
+        end
+    else confirmar_sugestao = false
+        C->>A: AgendarConsultaCommand(quinta 15:30) direto
+    end
+
+    A->>BD: INSERT consulta (status AGENDADA)
+    alt outro paciente ocupou o horário no meio-tempo
+        BD-->>A: violação de ux_consulta_inicio_agendada
+        A-->>C: HorarioIndisponivelError
+        C->>BD: recarrega a agenda
+        C->>AG: alternativa_para(quinta 15:30)
+        AG-->>C: HorarioSugerido(quinta 16:00)
+        C-->>P: "Esse horário não está disponível. O mais próximo é quinta às 16:00. Posso confirmar?"
+    else horário continua livre
+        BD-->>A: ok
+        C-->>P: "Consulta agendada para quinta às 15:30"
+    end

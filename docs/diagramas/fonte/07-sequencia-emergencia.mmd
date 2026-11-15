@@ -1,0 +1,37 @@
+sequenceDiagram
+    autonumber
+    actor P as Paciente
+    participant C as ConduzirConversaService
+    participant Q as RegistrarQueixaService
+    participant S as DetectorSinaisAlarme
+    participant IA as Claude (Anthropic)
+    participant BD as PostgreSQL
+    participant F as Fila de eventos
+    participant N as NotificarConsultorioService
+    actor R as Recepção
+
+    P->>C: "Meu rosto está inchado e estou com febre alta"
+    C->>Q: RegistrarQueixaCommand
+    Q->>S: palavras_alarme do config/odonto.yaml
+    S-->>Q: sinais: rosto inchado, febre alta
+    Q->>IA: classificar (texto da queixa e catálogo)
+    IA-->>Q: CELULITE_ABSCESSO_FACE, sinais_alarme = true
+    Note over Q: Prioridade final = a mais alta entre<br/>catálogo, IA e detector → EMERGENCIA
+    Q->>BD: queixa_relatada (EMERGENCIA) + evento EmergenciaDetectada
+    Q-->>C: queixa registrada
+    C->>C: OferecerPrimeiroHorario: Agenda.primeiro_livre
+    C-->>P: texto fixo de emergência: pronto-socorro ou SAMU (192)
+    C-->>P: "O primeiro horário livre é hoje às 14:00. Posso confirmar?"
+    BD-->>F: EmergenciaDetectada (após o commit)
+    F->>N: notificar
+    par canais independentes
+        N->>R: template alerta_consultorio (WhatsApp)
+    and
+        N->>R: e-mail
+    and
+        N->>N: log
+    end
+    Note over N: Falha em um canal não impede os outros
+    P->>C: "Sim"
+    C->>BD: consulta AGENDADA (prioridade EMERGENCIA) + ConsultaAgendada
+    C-->>P: "Consulta agendada para hoje às 14:00"

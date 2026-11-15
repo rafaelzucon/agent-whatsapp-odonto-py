@@ -1,0 +1,25 @@
+%% Diagrama de contexto (DFD nível 0): o sistema como um único processo.
+flowchart LR
+    paciente(["Paciente"])
+    meta(["Meta<br/>WhatsApp Cloud API"])
+    claude(["Anthropic<br/>Claude"])
+    transcricao(["OpenAI<br/>transcrição de áudio"])
+    smtp(["Servidor SMTP"])
+    recepcao(["Consultório<br/>recepção e dentista"])
+
+    sistema(("0<br/>Agente WhatsApp<br/>do consultório"))
+
+    paciente -- "texto e áudio" --> meta
+    meta -- "respostas automáticas" --> paciente
+    meta -- "webhook: mensagens assinadas (HMAC)" --> sistema
+    sistema -- "mensagens de texto e templates" --> meta
+    sistema -- "download de mídia" --> meta
+    sistema -- "só o texto da queixa ou da data" --> claude
+    claude -- "código do catálogo, prioridade, data e hora" --> sistema
+    sistema -- "áudio do paciente" --> transcricao
+    transcricao -- "transcrição em pt" --> sistema
+    sistema -- "aviso de agendamento e alertas" --> smtp
+    smtp -- "e-mail" --> recepcao
+    meta -- "template novo_agendamento e alerta" --> recepcao
+    recepcao -- "API: agenda, bloqueios, prontuário, reclassificação" --> sistema
+    sistema -- "agenda, pacientes, catálogo" --> recepcao

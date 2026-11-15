@@ -1,0 +1,43 @@
+stateDiagram-v2
+    [*] --> AGUARDANDO_RG: primeira mensagem / boas-vindas
+
+    AGUARDANDO_RG --> AGUARDANDO_PROBLEMA: RG encontrado
+    AGUARDANDO_RG --> AGUARDANDO_DECISAO_NOVA_CONSULTA: RG encontrado e já tem consulta futura
+    AGUARDANDO_RG --> AGUARDANDO_NOME: RG não cadastrado
+
+    AGUARDANDO_NOME --> AGUARDANDO_DATA_NASCIMENTO: nome válido
+    AGUARDANDO_DATA_NASCIMENTO --> AGUARDANDO_RESPONSAVEL: menor de 18 anos
+    AGUARDANDO_DATA_NASCIMENTO --> AGUARDANDO_CONSENTIMENTO: maior de idade
+    AGUARDANDO_RESPONSAVEL --> AGUARDANDO_CONSENTIMENTO: nome do responsável
+    AGUARDANDO_CONSENTIMENTO --> AGUARDANDO_PROBLEMA: SIM / cadastro e prontuário criados
+    AGUARDANDO_CONSENTIMENTO --> ENCERRADA_SEM_CONSENTIMENTO: NÃO
+
+    AGUARDANDO_DECISAO_NOVA_CONSULTA --> AGUARDANDO_PROBLEMA: SIM
+    AGUARDANDO_DECISAO_NOVA_CONSULTA --> CONCLUIDA: NÃO
+
+    AGUARDANDO_PROBLEMA --> AGUARDANDO_DATA_HORA: queixa classificada e registrada
+    AGUARDANDO_PROBLEMA --> AGUARDANDO_CONFIRMACAO_SUGESTAO: EMERGENCIA / oferece o 1º horário livre
+    note right of AGUARDANDO_PROBLEMA
+        Sinais de alarme: texto fixo de emergência
+        e aviso imediato ao consultório
+    end note
+
+    AGUARDANDO_DATA_HORA --> CONCLUIDA: horário livre / consulta agendada
+    AGUARDANDO_DATA_HORA --> AGUARDANDO_CONFIRMACAO_SUGESTAO: ocupado / sugere o mais próximo
+    AGUARDANDO_CONFIRMACAO_SUGESTAO --> CONCLUIDA: SIM / consulta agendada
+    AGUARDANDO_CONFIRMACAO_SUGESTAO --> AGUARDANDO_CONFIRMACAO_SUGESTAO: outra data ocupada
+    AGUARDANDO_CONFIRMACAO_SUGESTAO --> AGUARDANDO_DATA_HORA: NÃO
+
+    AGUARDANDO_NOME --> ENCAMINHADA_ATENDIMENTO_HUMANO: N respostas inválidas
+    AGUARDANDO_PROBLEMA --> ENCAMINHADA_ATENDIMENTO_HUMANO: N respostas inválidas
+    AGUARDANDO_DATA_HORA --> ENCAMINHADA_ATENDIMENTO_HUMANO: inválidas ou sem horário livre
+
+    CONCLUIDA --> AGUARDANDO_RG: nova mensagem (cortesias são ignoradas)
+    ENCERRADA_SEM_CONSENTIMENTO --> AGUARDANDO_RG: nova mensagem
+    ENCAMINHADA_ATENDIMENTO_HUMANO --> AGUARDANDO_RG: após a expiração (silêncio até lá)
+
+    note left of AGUARDANDO_RG
+        Qualquer etapa sem interação por
+        conversa.expiracao_minutos expira
+        e recomeça do início
+    end note

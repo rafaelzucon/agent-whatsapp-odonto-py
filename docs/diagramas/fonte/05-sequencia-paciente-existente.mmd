@@ -1,0 +1,37 @@
+sequenceDiagram
+    autonumber
+    actor P as Paciente
+    participant C as ConduzirConversaService
+    participant I as IdentificarPacienteService
+    participant BD as PostgreSQL
+    participant Q as RegistrarQueixaService
+    participant A as AgendarConsultaService
+    participant N as NotificarConsultorioService
+    actor R as Recepção
+
+    P->>C: "Oi" (via Meta, webhook e fila)
+    C-->>P: boas-vindas: pede RG e UF
+    P->>C: "MG 12.345.678"
+    C->>I: IdentificarPacienteCommand(documento, wa_id)
+    I->>BD: busca por rg_hash
+    BD-->>I: paciente + prontuário
+    I->>BD: vincula o número do WhatsApp, se novo
+    I-->>C: primeiro nome, consulta futura
+
+    alt já tem consulta futura
+        C-->>P: "Você já tem consulta em 25/11 às 10:00. Deseja agendar outra?"
+        P->>C: "Sim"
+    end
+
+    C-->>P: "Olá, Maria! Qual é o problema?"
+    P->>C: "Quero fazer uma limpeza"
+    C->>Q: RegistrarQueixaCommand
+    Q-->>C: LIMPEZA_PROFILAXIA, ROTINA
+    C-->>P: "Para quando você gostaria de agendar?"
+    P->>C: "Sexta de manhã"
+    C->>C: Agenda.resolver(data = sexta, período = manhã)
+    C->>A: AgendarConsultaCommand(primeiro horário livre da manhã)
+    A->>BD: consulta AGENDADA
+    C-->>P: "Consulta agendada para sexta, 20/11 às 08:00"
+    BD-->>N: ConsultaAgendada (após o commit)
+    N->>R: aviso pelo WhatsApp, e-mail e log
