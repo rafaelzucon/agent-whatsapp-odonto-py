@@ -42,10 +42,25 @@ class FormatadorJson(logging.Formatter):
         return json.dumps(evento, ensure_ascii=False, default=str)
 
 
+class FiltroHealthcheck(logging.Filter):
+    """Descarta o acesso ``GET /health`` bem-sucedido (o HEALTHCHECK roda a cada 30s)."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        args = record.args
+        return not (
+            record.name == "uvicorn.access"
+            and isinstance(args, tuple)
+            and len(args) >= 5
+            and args[2] == "/health"
+            and args[4] == 200
+        )
+
+
 def configurar_logs(nivel: str = "INFO") -> None:
     """Um único handler em stdout no logger raiz; Uvicorn e bibliotecas propagam para ele."""
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(FormatadorJson())
+    handler.addFilter(FiltroHealthcheck())
     raiz = logging.getLogger()
     raiz.handlers[:] = [handler]
     raiz.setLevel(nivel)

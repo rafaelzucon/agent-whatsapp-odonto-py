@@ -54,11 +54,17 @@ def test_configurar_logs_usa_um_handler_json(capsys: pytest.CaptureFixture[str])
     handlers, nivel = raiz.handlers[:], raiz.level
     try:
         configurar_logs("WARNING")
-        logging.getLogger("uvicorn.access").warning('"GET /docs?token=x HTTP/1.1" 200')
+        acesso = logging.getLogger("uvicorn.access")
+        acesso.warning('"GET /docs?token=x HTTP/1.1" 200')
+        formato = '%s - "%s %s HTTP/%s" %d'
+        acesso.warning(formato, "127.0.0.1:1", "GET", "/health", "1.1", 200)
+        acesso.warning(formato, "127.0.0.1:1", "GET", "/health", "1.1", 503)
         logging.getLogger("odonto").info("não aparece")
     finally:
         raiz.handlers[:], raiz.level = handlers, nivel
 
     linhas = capsys.readouterr().out.strip().splitlines()
-    assert len(linhas) == 1
-    assert json.loads(linhas[0])["mensagem"] == '"GET /docs?token=*** HTTP/1.1" 200'
+    assert [json.loads(linha)["mensagem"] for linha in linhas] == [
+        '"GET /docs?token=*** HTTP/1.1" 200',
+        '127.0.0.1:1 - "GET /health HTTP/1.1" 503',
+    ]
