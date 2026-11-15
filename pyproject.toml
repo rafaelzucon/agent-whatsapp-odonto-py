@@ -124,6 +124,7 @@ asyncio_default_fixture_loop_scope = "function"
 addopts = ["-ra", "--strict-markers", "--strict-config"]
 markers = [
     "arquitetura: verificações de dependência entre camadas (import-linter)",
+    "integracao: testes contra um PostgreSQL real (ODONTO_TESTE_DATABASE_URL)",
 ]
 filterwarnings = ["error::pytest.PytestUnraisableExceptionWarning"]
 

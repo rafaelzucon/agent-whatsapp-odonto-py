@@ -1,0 +1,528 @@
+# Catálogo de problemas odontológicos (fonte única, lida pela migração 0002_catalogo_problemas).
+#
+# Referências:
+#   - CID-10 (OMS / DATASUS), capítulo XI, K00-K14: doenças da cavidade oral, glândulas
+#     salivares e maxilares; S02.5 (fratura de dente) e S03.2 (luxação de dente); B00.1,
+#     B37.0, R19.6, R68.2, F45.8, T81, T85 e códigos Z de procedimentos.
+#   - Especialidades odontológicas reconhecidas pelo Conselho Federal de Odontologia (CFO).
+#
+# O código CID-10 é só uma referência para o prontuário: quem diagnostica é o dentista.
+# Para incluir ou alterar itens, edite este arquivo e crie uma nova migração (ver README).
+# As palavras-chave são comparadas sem acento e sem diferenciar maiúsculas; escreva-as como o
+# paciente escreveria. "prioridade" é a prioridade padrão do item (EMERGENCIA, URGENCIA, ROTINA).
+
+problemas:
+  # --- Dente e polpa (Dentística / Endodontia) ----------------------------------------------
+  - codigo: CARIE
+    nome: Cárie
+    descricao: Buraco ou mancha escura no dente causada por bactérias.
+    especialidade: Dentística
+    prioridade: ROTINA
+    cid10: K02.9
+    palavras_chave: [cárie, carie, cariado, buraco no dente, dente furado, dente podre, dente preto, mancha preta no dente, comida entrando no dente]
+
+  - codigo: DOR_DE_DENTE
+    nome: Dor de dente
+    descricao: Dor em um ou mais dentes, sem causa identificada pelo paciente.
+    especialidade: Endodontia
+    prioridade: URGENCIA
+    cid10: K08.8
+    palavras_chave: [dor de dente, dente doendo, dente dói, dente doi, dor no dente, dente latejando, dor no molar, dor no siso, odontalgia]
+
+  - codigo: PULPITE
+    nome: Pulpite
+    descricao: Inflamação do nervo do dente, com dor forte, latejante ou ao tomar coisas geladas ou quentes.
+    especialidade: Endodontia
+    prioridade: URGENCIA
+    cid10: K04.0
+    palavras_chave: [pulpite, nervo do dente, nervo exposto, dor latejante, dor que não passa com remédio, dói com gelado e quente, dor à noite no dente, dor de noite no dente, dor que irradia]
+
+  - codigo: ABSCESSO_SEM_FISTULA
+    nome: Abscesso dentário (sem fístula)
+    descricao: Infecção na ponta da raiz com dor e inchaço, sem saída de pus pela gengiva.
+    especialidade: Endodontia
+    prioridade: URGENCIA
+    cid10: K04.7
+    palavras_chave: [abscesso, abcesso, infecção no dente, infeccao no dente, dente inflamado, gengiva inchada no dente, inchaço no dente, dente inchado]
+
+  - codigo: ABSCESSO_COM_FISTULA
+    nome: Abscesso dentário (com fístula)
+    descricao: Infecção na raiz que drena pus por uma "bolinha" na gengiva.
+    especialidade: Endodontia
+    prioridade: URGENCIA
+    cid10: K04.6
+    palavras_chave: [fístula, fistula, bolinha de pus, pus na gengiva, saindo pus, bolha na gengiva, carocinho de pus, gosto de pus]
+
+  - codigo: NECROSE_PULPAR
+    nome: Necrose pulpar
+    descricao: O nervo do dente morreu; o dente pode ficar escurecido.
+    especialidade: Endodontia
+    prioridade: ROTINA
+    cid10: K04.1
+    palavras_chave: [necrose, dente morto, nervo morto, dente escurecido, dente ficou escuro, dente cinza]
+
+  - codigo: TRATAMENTO_CANAL
+    nome: Tratamento de canal
+    descricao: Necessidade de iniciar, continuar ou refazer um tratamento de canal.
+    especialidade: Endodontia
+    prioridade: ROTINA
+    cid10: K04.9
+    palavras_chave: [canal, tratamento de canal, fazer canal, terminar o canal, refazer canal, retratamento, curativo do canal, endodontia]
+
+  - codigo: PERIODONTITE_APICAL_AGUDA
+    nome: Periodontite apical aguda
+    descricao: Dor ao mastigar ou ao encostar no dente, com sensação de dente "alto".
+    especialidade: Endodontia
+    prioridade: ROTINA
+    cid10: K04.4
+    palavras_chave: [dói ao mastigar, doi ao mastigar, dor ao morder, dói quando mordo, dente alto, dói ao encostar, dor ao encostar no dente]
+
+  # --- Gengiva e periodonto (Periodontia) ---------------------------------------------------
+  - codigo: GENGIVITE
+    nome: Gengivite
+    descricao: Gengiva vermelha, inchada ou sensível por acúmulo de placa.
+    especialidade: Periodontia
+    prioridade: ROTINA
+    cid10: K05.1
+    palavras_chave: [gengivite, gengiva inflamada, gengiva vermelha, gengiva inchada, gengiva sensível, gengiva dolorida, gengiva doendo]
+
+  - codigo: SANGRAMENTO_GENGIVAL
+    nome: Sangramento gengival
+    descricao: Gengiva que sangra ao escovar, usar fio dental ou sozinha.
+    especialidade: Periodontia
+    prioridade: ROTINA
+    cid10: K06.8
+    palavras_chave: [gengiva sangrando, gengiva sangra, sangra ao escovar, sangue ao escovar, sangue na escova, sangramento na gengiva, sangue no fio dental, cuspo sangue]
+
+  - codigo: PERIODONTITE
+    nome: Periodontite (piorreia)
+    descricao: Doença da gengiva e do osso que sustenta os dentes, com perda de suporte.
+    especialidade: Periodontia
+    prioridade: ROTINA
+    cid10: K05.3
+    palavras_chave: [periodontite, piorreia, piorréia, doença na gengiva, osso do dente, perda óssea, bolsa na gengiva, gengiva descolando]
+
+  - codigo: ABSCESSO_PERIODONTAL
+    nome: Abscesso periodontal
+    descricao: Bolsa de pus na gengiva ao lado do dente, com dor e inchaço.
+    especialidade: Periodontia
+    prioridade: URGENCIA
+    cid10: K05.2
+    palavras_chave: [abscesso na gengiva, abscesso periodontal, bolsa de pus na gengiva, gengiva com pus, inchaço na gengiva com pus]
+
+  - codigo: RETRACAO_GENGIVAL
+    nome: Retração gengival
+    descricao: A gengiva "desceu" e deixou a raiz do dente aparecendo.
+    especialidade: Periodontia
+    prioridade: ROTINA
+    cid10: K06.0
+    palavras_chave: [retração gengival, retracao gengival, gengiva retraída, gengiva retraida, gengiva baixou, gengiva descendo, raiz aparecendo, raiz exposta, dente parecendo maior]
+
+  - codigo: MOBILIDADE_DENTARIA
+    nome: Mobilidade dentária
+    descricao: Dente permanente mole ou balançando.
+    especialidade: Periodontia
+    prioridade: ROTINA
+    cid10: K08.8
+    palavras_chave: [dente mole, dente balançando, dente balancando, dente frouxo, dente mexendo, dente se mexendo, mobilidade]
+
+  - codigo: TARTARO
+    nome: Tártaro
+    descricao: Placa endurecida (amarelada ou escura) grudada nos dentes.
+    especialidade: Periodontia
+    prioridade: ROTINA
+    cid10: K03.6
+    palavras_chave: [tártaro, tartaro, cálculo dental, calculo dental, pedra no dente, crosta no dente, placa bacteriana, sujeira no dente]
+
+  # --- Desgaste, sensibilidade e ATM ----------------------------------------------------------
+  - codigo: HIPERSENSIBILIDADE
+    nome: Hipersensibilidade dentinária
+    descricao: Dor rápida e aguda ao tomar algo gelado, quente ou doce, ou ao escovar.
+    especialidade: Dentística
+    prioridade: ROTINA
+    cid10: K03.8
+    palavras_chave: [sensibilidade, dente sensível, dente sensivel, sensível ao gelado, dói com gelado, doi com gelado, dor com água gelada, dor com doce, choque no dente, dente sente frio]
+
+  - codigo: EROSAO
+    nome: Erosão dental
+    descricao: Desgaste do esmalte por ácidos (refrigerantes, sucos, refluxo, vômitos).
+    especialidade: Dentística
+    prioridade: ROTINA
+    cid10: K03.2
+    palavras_chave: [erosão, erosao, esmalte gasto, dente corroído, dente corroido, refluxo, dente transparente na ponta, ácido no dente]
+
+  - codigo: ABRASAO
+    nome: Abrasão dental
+    descricao: Desgaste perto da gengiva por escovação com força ou escova dura.
+    especialidade: Dentística
+    prioridade: ROTINA
+    cid10: K03.1
+    palavras_chave: [abrasão, abrasao, desgaste perto da gengiva, buraco perto da gengiva, escovo com força, escova dura, entalhe no dente]
+
+  - codigo: DESGASTE
+    nome: Desgaste dental (atrição)
+    descricao: Dentes gastos, curtos ou lisos pelo contato entre eles.
+    especialidade: Dentística
+    prioridade: ROTINA
+    cid10: K03.0
+    palavras_chave: [desgaste, dente gasto, dentes gastos, dente desgastado, dentes curtos, dente lixado]
+
+  - codigo: BRUXISMO
+    nome: Bruxismo
+    descricao: Ranger ou apertar os dentes, principalmente dormindo.
+    especialidade: Disfunção Temporomandibular e Dor Orofacial
+    prioridade: ROTINA
+    cid10: F45.8
+    palavras_chave: [bruxismo, ranger os dentes, rango os dentes, range os dentes, aperto os dentes, apertar os dentes, placa de bruxismo, placa de mordida, placa para dormir]
+
+  - codigo: DTM
+    nome: Disfunção temporomandibular (DTM)
+    descricao: Dor ou estalo na articulação da mandíbula, dificuldade para abrir a boca.
+    especialidade: Disfunção Temporomandibular e Dor Orofacial
+    prioridade: ROTINA
+    cid10: K07.6
+    palavras_chave: [dtm, atm, mandíbula, mandibula, maxilar estalando, estalo na boca, estalo ao abrir a boca, dor no ouvido ao mastigar, boca travou, boca trava, queixo travado, dor na articulação, dificuldade para abrir a boca]
+
+  # --- Trauma (Cirurgia e Traumatologia Bucomaxilofaciais / Endodontia) ------------------------
+  - codigo: FRATURA_DENTAL
+    nome: Fratura dental
+    descricao: Dente quebrado, lascado ou trincado.
+    especialidade: Dentística
+    prioridade: URGENCIA
+    cid10: S02.5
+    palavras_chave: [dente quebrado, quebrei o dente, quebrou o dente, dente quebrou, dente lascado, lasquei o dente, lascou, dente trincado, trinca no dente, pedaço do dente, pedaco do dente, dente partido, fratura]
+
+  - codigo: AVULSAO_TRAUMA
+    nome: Trauma com dente arrancado (avulsão)
+    descricao: Dente que saiu inteiro da boca após pancada ou queda. Procure atendimento imediato.
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: EMERGENCIA
+    cid10: S03.2
+    palavras_chave: [dente caiu, dente saiu, dente arrancado, arrancou o dente, dente arrancou, perdi o dente na queda, avulsão, avulsao, pancada na boca, bati a boca, caí de boca, cai de boca, queda de boca, acidente na boca]
+
+  - codigo: LUXACAO
+    nome: Luxação dentária
+    descricao: Dente deslocado, torto ou empurrado para dentro após uma pancada.
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: EMERGENCIA
+    cid10: S03.2
+    palavras_chave: [dente torto depois da pancada, dente deslocado, dente entortou, dente afundou, dente para dentro, dente fora do lugar, luxação, luxacao]
+
+  # --- Siso e cirurgia (Cirurgia e Traumatologia Bucomaxilofaciais) ----------------------------
+  - codigo: SISO_INCLUSO
+    nome: Siso (terceiro molar) incluso ou semi-incluso
+    descricao: Dente do siso que não nasceu ou nasceu só em parte; avaliação para extração.
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: ROTINA
+    cid10: K01.0
+    palavras_chave: [siso, sisos, dente do juízo, dente do juizo, terceiro molar, tirar o siso, extrair o siso, arrancar o siso, siso nascendo, siso incluso]
+
+  - codigo: DENTES_IMPACTADOS
+    nome: Dente incluso ou impactado
+    descricao: Dente (não siso) preso no osso ou na gengiva que não nasceu no lugar.
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: ROTINA
+    cid10: K01.1
+    palavras_chave: [dente incluso, dente impactado, dente não nasceu, dente nao nasceu, dente preso no osso, canino incluso, dente que não nasce]
+
+  - codigo: PERICORONARITE
+    nome: Pericoronarite
+    descricao: Inflamação da gengiva em volta do siso nascendo, com dor e dificuldade para abrir a boca.
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: URGENCIA
+    cid10: K05.2
+    palavras_chave: [pericoronarite, gengiva inflamada no siso, gengiva inchada no siso, siso inflamado, siso inflamou, dor no siso nascendo, capuz do siso]
+
+  - codigo: ALVEOLITE
+    nome: Alveolite
+    descricao: Dor forte alguns dias depois de extrair um dente (infecção ou "buraco seco").
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: URGENCIA
+    cid10: K10.3
+    palavras_chave: [alveolite, dor depois de extrair, dor depois da extração, dor depois da extracao, buraco da extração, buraco seco, dor no lugar do dente que tirei, mau cheiro onde tirei o dente]
+
+  - codigo: POS_OPERATORIO_DOR_INCHACO
+    nome: Dor ou inchaço pós-operatório
+    descricao: Dor, inchaço ou desconforto após cirurgia ou procedimento odontológico.
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: URGENCIA
+    cid10: T81.8
+    palavras_chave: [pós operatório, pos operatorio, depois da cirurgia, inchou depois da cirurgia, dor depois do procedimento, ponto da cirurgia, pontos inflamados, inchado depois de tirar o dente]
+
+  - codigo: SANGRAMENTO_POS_EXTRACAO
+    nome: Sangramento após extração
+    descricao: Sangramento que não para depois de extrair um dente ou de uma cirurgia.
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: URGENCIA
+    cid10: T81.0
+    palavras_chave: [sangrando depois da extração, sangrando depois da extracao, sangue não para, sangue nao para, sangramento depois de tirar o dente, sangrando onde tirei o dente, hemorragia]
+
+  # --- Restauração, prótese e implante (Dentística / Prótese Dentária / Implantodontia) --------
+  - codigo: RESTAURACAO_QUEBRADA
+    nome: Restauração quebrada ou caída
+    descricao: Obturação (restauração) que caiu, quebrou ou está com falha.
+    especialidade: Dentística
+    prioridade: ROTINA
+    cid10: K08.8
+    palavras_chave: [restauração caiu, restauracao caiu, obturação caiu, obturacao caiu, massinha caiu, resina caiu, restauração quebrou, obturação quebrou, caiu a restauração, caiu a obturação, caiu a massinha, caiu a resina, chumbo caiu]
+
+  - codigo: PROTESE_COROA_PROBLEMA
+    nome: Coroa ou prótese solta, quebrada ou desadaptada
+    descricao: Coroa, ponte, dentadura ou prótese que soltou, quebrou ou está machucando.
+    especialidade: Prótese Dentária
+    prioridade: ROTINA
+    cid10: Z46.3
+    palavras_chave: [prótese, protese, dentadura, chapa, ponte móvel, ponte movel, roach, coroa caiu, coroa soltou, jaqueta caiu, pivô caiu, pivo caiu, prótese quebrou, prótese machucando, dentadura machucando, dentadura frouxa, prótese solta]
+
+  - codigo: PERDA_DENTARIA_REABILITACAO
+    nome: Perda dentária e reabilitação
+    descricao: Falta de dentes; avaliação para implante, ponte ou prótese.
+    especialidade: Prótese Dentária
+    prioridade: ROTINA
+    cid10: K08.1
+    palavras_chave: [falta de dente, falta dente, perdi um dente, perdi dentes, sem dente, banguela, colocar implante, fazer implante, quero implante, repor dente, colocar dente, fazer prótese, fazer dentadura]
+
+  - codigo: PERI_IMPLANTITE
+    nome: Peri-implantite
+    descricao: Inflamação ou infecção da gengiva e do osso em volta do implante.
+    especialidade: Implantodontia
+    prioridade: URGENCIA
+    cid10: T85.7
+    palavras_chave: [peri implantite, periimplantite, implante inflamado, gengiva inflamada no implante, pus no implante, implante sangrando, implante inchado]
+
+  - codigo: PROBLEMA_IMPLANTE
+    nome: Problema com implante
+    descricao: Implante ou coroa sobre implante solto, quebrado ou com desconforto.
+    especialidade: Implantodontia
+    prioridade: ROTINA
+    cid10: T85.6
+    palavras_chave: [implante, implante solto, implante mexendo, implante quebrou, coroa do implante, parafuso do implante, implante doendo, dente do implante caiu]
+
+  # --- Ortodontia e estética --------------------------------------------------------------------
+  - codigo: MA_OCLUSAO
+    nome: Má oclusão e avaliação ortodôntica
+    descricao: Dentes tortos, encavalados, separados ou mordida errada.
+    especialidade: Ortodontia
+    prioridade: ROTINA
+    cid10: K07.4
+    palavras_chave: [dente torto, dentes tortos, dente encavalado, dentes encavalados, dente separado, diastema, mordida cruzada, mordida aberta, mordida torta, queixo para frente, colocar aparelho, quero aparelho, alinhador, alinhadores, invisalign]
+
+  - codigo: APARELHO_ORTODONTICO
+    nome: Aparelho ortodôntico quebrado ou machucando
+    descricao: Manutenção do aparelho, bráquete solto, fio quebrado ou machucando.
+    especialidade: Ortodontia
+    prioridade: ROTINA
+    cid10: Z46.4
+    palavras_chave: [aparelho, aparelho quebrou, aparelho quebrado, aparelho machucando, bráquete, braquete, bracket, borrachinha, fio do aparelho, fio machucando, manutenção do aparelho, manutencao do aparelho, contenção, contencao]
+
+  - codigo: MANCHAS_COR
+    nome: Manchas e alteração de cor
+    descricao: Dentes amarelados, escurecidos ou manchados.
+    especialidade: Dentística
+    prioridade: ROTINA
+    cid10: K03.7
+    palavras_chave: [dente amarelo, dentes amarelos, dente amarelado, mancha no dente, manchas nos dentes, dente manchado, mancha de café, mancha de cigarro, dente escuro]
+
+  - codigo: FLUOROSE
+    nome: Fluorose
+    descricao: Manchas brancas ou marrons no esmalte por excesso de flúor na infância.
+    especialidade: Dentística
+    prioridade: ROTINA
+    cid10: K00.3
+    palavras_chave: [fluorose, mancha branca no dente, manchas brancas nos dentes, dente pintado, excesso de flúor]
+
+  - codigo: CLAREAMENTO_ESTETICA
+    nome: Clareamento e estética
+    descricao: Clareamento, facetas, lentes de contato dental e melhorias do sorriso.
+    especialidade: Dentística
+    prioridade: ROTINA
+    cid10: Z41.8
+    palavras_chave: [clareamento, clarear, clarear os dentes, branquear, faceta, facetas, lente de contato dental, lentes de contato, lentes nos dentes, estética, estetica, sorriso bonito, harmonizar o sorriso]
+
+  # --- Estomatologia e tecidos moles ------------------------------------------------------------
+  - codigo: HALITOSE
+    nome: Halitose (mau hálito)
+    descricao: Mau hálito persistente.
+    especialidade: Estomatologia
+    prioridade: ROTINA
+    cid10: R19.6
+    palavras_chave: [mau hálito, mau halito, mal hálito, mal halito, bafo, hálito ruim, halito ruim, halitose, boca com cheiro ruim, cheiro na boca]
+
+  - codigo: XEROSTOMIA
+    nome: Boca seca (xerostomia)
+    descricao: Sensação de boca seca, pouca saliva.
+    especialidade: Estomatologia
+    prioridade: ROTINA
+    cid10: R68.2
+    palavras_chave: [boca seca, boca sequinha, pouca saliva, sem saliva, falta de saliva, xerostomia, garganta seca e boca]
+
+  - codigo: AFTAS
+    nome: Aftas
+    descricao: Feridas pequenas e doloridas na boca que voltam de tempos em tempos.
+    especialidade: Estomatologia
+    prioridade: ROTINA
+    cid10: K12.0
+    palavras_chave: [afta, aftas, ferida na boca, feridinha na boca, machucado na boca, ferida na língua, ferida na lingua, sapinho branco que dói]
+
+  - codigo: HERPES_LABIAL
+    nome: Herpes labial
+    descricao: Bolhas no lábio que ardem e voltam de tempos em tempos.
+    especialidade: Estomatologia
+    prioridade: ROTINA
+    cid10: B00.1
+    palavras_chave: [herpes, herpes labial, bolha no lábio, bolha no labio, bolhinhas na boca, ferida no lábio, ferida no labio]
+
+  - codigo: CANDIDIASE
+    nome: Candidíase oral (sapinho)
+    descricao: Placas brancas na boca ou na língua que saem ao raspar.
+    especialidade: Estomatologia
+    prioridade: ROTINA
+    cid10: B37.0
+    palavras_chave: [sapinho, candidíase, candidiase, língua branca, lingua branca, placas brancas na boca, fungo na boca, boca branca]
+
+  - codigo: LESAO_NAO_CICATRIZA
+    nome: Lesão na boca que não cicatriza
+    descricao: Ferida, caroço ou úlcera há mais de 15 dias. Precisa de avaliação prioritária.
+    especialidade: Estomatologia
+    prioridade: URGENCIA
+    cid10: K13.7
+    palavras_chave: [ferida que não sara, ferida que nao sara, ferida que não cicatriza, ferida que nao cicatriza, machucado que não sara, ferida há semanas, ferida faz tempo, caroço na boca, caroco na boca, caroço na língua, nódulo na boca, nodulo na boca, úlcera na boca, ulcera na boca]
+
+  - codigo: MANCHA_BRANCA_VERMELHA
+    nome: Mancha branca ou vermelha na boca
+    descricao: Placa ou mancha branca ou vermelha que não sai ao raspar. Precisa de avaliação prioritária.
+    especialidade: Estomatologia
+    prioridade: URGENCIA
+    cid10: K13.2
+    palavras_chave: [mancha branca na boca, mancha vermelha na boca, mancha na bochecha, mancha na língua, mancha na lingua, placa branca que não sai, leucoplasia, eritroplasia]
+
+  - codigo: CISTO_MAXILARES
+    nome: Cisto na boca ou nos maxilares
+    descricao: Cisto ou "bolsa" no osso ou na gengiva, às vezes visto em radiografia.
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: ROTINA
+    cid10: K09.9
+    palavras_chave: [cisto, cisto na boca, cisto no osso, cisto na gengiva, apareceu um cisto no raio x, apareceu na radiografia]
+
+  - codigo: ALTERACAO_MAXILARES
+    nome: Alteração inflamatória dos maxilares
+    descricao: Inflamação ou infecção no osso da mandíbula ou do maxilar.
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: ROTINA
+    cid10: K10.2
+    palavras_chave: [osso da boca inflamado, inflamação no osso, infecção no osso, osteomielite, osteonecrose, osso exposto na boca]
+
+  - codigo: SIALOLITIASE
+    nome: Pedra na glândula salivar (sialolitíase)
+    descricao: Inchaço embaixo da língua ou da mandíbula que piora ao comer.
+    especialidade: Estomatologia
+    prioridade: ROTINA
+    cid10: K11.5
+    palavras_chave: [pedra na glândula, pedra na glandula, pedra na saliva, cálculo salivar, calculo salivar, sialolitíase, sialolitiase, incha quando como, incha ao comer]
+
+  - codigo: GLANDULA_SALIVAR_INCHADA
+    nome: Glândula salivar inflamada
+    descricao: Inchaço e dor na glândula salivar (embaixo da língua, da mandíbula ou perto da orelha).
+    especialidade: Estomatologia
+    prioridade: ROTINA
+    cid10: K11.2
+    palavras_chave: [glândula inchada, glandula inchada, glândula salivar, glandula salivar, inchaço embaixo da língua, inchaço embaixo do queixo, sialoadenite]
+
+  - codigo: MUCOCELE
+    nome: Mucocele
+    descricao: Bolinha mole e transparente ou arroxeada no lábio, geralmente após mordida.
+    especialidade: Estomatologia
+    prioridade: ROTINA
+    cid10: K11.6
+    palavras_chave: [mucocele, bolinha no lábio, bolinha no labio, bolha de água no lábio, bolinha de água na boca, bolinha transparente na boca]
+
+  - codigo: CELULITE_ABSCESSO_FACE
+    nome: Infecção espalhada no rosto (celulite / abscesso da boca)
+    descricao: Inchaço que se espalha pelo rosto ou pescoço, com febre. Procure atendimento imediato.
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: EMERGENCIA
+    cid10: K12.2
+    palavras_chave: [rosto inchado, cara inchada, face inchada, bochecha inchada, inchaço no rosto, inchaço na cara, olho inchado, pescoço inchado, celulite na face, infecção se espalhando]
+
+  # --- Odontopediatria ----------------------------------------------------------------------------
+  - codigo: ERUPCAO_DENTARIA
+    nome: Erupção dentária
+    descricao: Dente nascendo (bebês e crianças), com incômodo na gengiva.
+    especialidade: Odontopediatria
+    prioridade: ROTINA
+    cid10: K00.6
+    palavras_chave: [dente nascendo, dentinho nascendo, nascendo os dentes, bebê com gengiva inchada, bebe com gengiva inchada, dentição, denticao, dente atrasado para nascer]
+
+  - codigo: DENTES_DE_LEITE
+    nome: Dentes de leite
+    descricao: Dente de leite mole, que não caiu ou permanente nascendo atrás do de leite.
+    especialidade: Odontopediatria
+    prioridade: ROTINA
+    cid10: K00.6
+    palavras_chave: [dente de leite, dentes de leite, dente de leite mole, dente de leite não caiu, dente nascendo atrás, dente nascendo atras, tubarão, dentição dupla, criança, crianca, meu filho, minha filha, bebê, bebe]
+
+  - codigo: ANOMALIAS_DESENVOLVIMENTO
+    nome: Anomalia de desenvolvimento dental
+    descricao: Dente a mais, a menos, com formato ou tamanho diferente.
+    especialidade: Odontopediatria
+    prioridade: ROTINA
+    cid10: K00.9
+    palavras_chave: [dente a mais, dente extra, dente supranumerário, falta de dente de nascença, dente não formou, dente com formato diferente, dente pequeno, dente grudado, dente fundido]
+
+  # --- Rotina (Clínica Geral) -----------------------------------------------------------------------
+  - codigo: AVALIACAO_CHECKUP
+    nome: Avaliação e check-up
+    descricao: Consulta de avaliação ou revisão periódica.
+    especialidade: Clínica Geral
+    prioridade: ROTINA
+    cid10: Z01.2
+    palavras_chave: [avaliação, avaliacao, check up, checkup, revisão, revisao, consulta de rotina, consulta, dar uma olhada, olhar os dentes, primeira consulta, retorno]
+
+  - codigo: LIMPEZA_PROFILAXIA
+    nome: Limpeza (profilaxia)
+    descricao: Limpeza profissional dos dentes e remoção de placa.
+    especialidade: Clínica Geral
+    prioridade: ROTINA
+    cid10: Z01.2
+    palavras_chave: [limpeza, limpar os dentes, limpeza dos dentes, fazer limpeza, profilaxia, polimento, raspagem]
+
+  - codigo: APLICACAO_FLUOR
+    nome: Aplicação de flúor
+    descricao: Aplicação preventiva de flúor (adultos e crianças).
+    especialidade: Odontopediatria
+    prioridade: ROTINA
+    cid10: Z29.8
+    palavras_chave: [flúor, fluor, aplicação de flúor, aplicacao de fluor, passar flúor, selante]
+
+  - codigo: ORCAMENTO
+    nome: Orçamento
+    descricao: Pedido de orçamento ou plano de tratamento.
+    especialidade: Clínica Geral
+    prioridade: ROTINA
+    cid10: Z01.2
+    palavras_chave: [orçamento, orcamento, quanto custa, quanto fica, preço, preco, valor do tratamento, plano de tratamento, convênio, convenio, aceita plano]
+
+  - codigo: AVALIACAO_GERAL_OUTRO
+    nome: Avaliação geral / outro
+    descricao: Queixa que não se encaixa nos demais itens; o dentista avalia na consulta.
+    especialidade: Clínica Geral
+    prioridade: ROTINA
+    cid10: Z01.2
+    palavras_chave: []
+
+  # --- Complementares -----------------------------------------------------------------------------
+  - codigo: ARDENCIA_LINGUA
+    nome: Ardência na língua ou na boca
+    descricao: Queimação ou ardor na língua ou na boca sem ferida visível.
+    especialidade: Estomatologia
+    prioridade: ROTINA
+    cid10: K14.6
+    palavras_chave: [língua ardendo, lingua ardendo, ardência na língua, ardencia na lingua, queimação na boca, queimacao na boca, boca ardendo, ardor na boca, síndrome da ardência bucal]
+
+  - codigo: RAIZ_RESIDUAL
+    nome: Raiz residual
+    descricao: Só sobrou a raiz do dente (dente "quebrado até a gengiva").
+    especialidade: Cirurgia e Traumatologia Bucomaxilofaciais
+    prioridade: ROTINA
+    cid10: K08.3
+    palavras_chave: [raiz residual, só a raiz, so a raiz, sobrou a raiz, resto de raiz, caco de dente, toco de dente, dente quebrado até a gengiva]
