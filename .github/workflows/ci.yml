@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualidade:
+    name: Lint, tipos, arquitetura e testes
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: teste
+          POSTGRES_DB: odonto
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Testes de integração (migrações e repositórios) contra o PostgreSQL do serviço.
+      ODONTO_TESTE_DATABASE_URL: postgresql+psycopg://postgres:teste@127.0.0.1:5432/odonto
+      TZ: America/Sao_Paulo
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Python (versão do .python-version)
+        run: uv python install
+      - name: Dependências
+        run: uv sync --frozen
+      - name: ruff check
+        run: uv run ruff check --output-format github
+      - name: ruff format
+        run: uv run ruff format --check
+      - name: mypy
+        run: uv run mypy
+      - name: Contratos de arquitetura (import-linter)
+        run: uv run lint-imports
+      - name: pytest
+        run: uv run pytest
+
+  docker:
+    name: Build da imagem
+    needs: qualidade
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - name: docker build (sem publicar)
+        run: docker build --pull -t agent-whatsapp-odonto-py:ci .
