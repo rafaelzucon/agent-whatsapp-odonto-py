@@ -70,6 +70,17 @@ async def test_falha_de_rede_vira_falha_de_integracao(api: WhatsAppCloudApi) -> 
 
 
 @respx.mock
+async def test_sem_credenciais_falha_sem_chamar_a_rede() -> None:
+    async with httpx.AsyncClient() as cliente:
+        api = WhatsAppCloudApi(cliente, phone_number_id="", access_token="")
+
+        with pytest.raises(FalhaIntegracaoError, match="não configurada"):
+            await api.enviar_texto(DESTINO, "Olá!")
+
+    assert not respx.calls
+
+
+@respx.mock
 async def test_baixa_midia_em_duas_etapas(api: WhatsAppCloudApi) -> None:
     respx.get(f"{URL}/MIDIA1").respond(
         200,

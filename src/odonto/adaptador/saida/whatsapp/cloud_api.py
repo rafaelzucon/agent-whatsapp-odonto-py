@@ -42,6 +42,7 @@ class WhatsAppCloudApi:
     ) -> None:
         self._cliente = cliente
         self._phone_number_id = phone_number_id
+        self._configurada = bool(phone_number_id and access_token)
         self._cabecalhos = {"Authorization": f"Bearer {access_token}"}
         self._url_api = f"{url_base.rstrip('/')}/{versao_api}"
 
@@ -96,6 +97,10 @@ class WhatsAppCloudApi:
         return MidiaBaixada(conteudo=resposta.content, mime_type=mime)
 
     async def _requisitar(self, metodo: str, url: str, **kwargs: Any) -> dict[str, Any]:
+        if not self._configurada:
+            raise FalhaIntegracaoError(
+                "Cloud API não configurada (WHATSAPP_PHONE_NUMBER_ID/WHATSAPP_ACCESS_TOKEN)."
+            )
         try:
             resposta = await self._cliente.request(metodo, url, headers=self._cabecalhos, **kwargs)
         except httpx.HTTPError as erro:
