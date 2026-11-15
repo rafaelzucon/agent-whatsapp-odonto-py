@@ -1,0 +1,28 @@
+# Alternativa ao ./odonto.sh: o mesmo container único (aplicação + PostgreSQL).
+#   docker compose up -d --build     (rode antes ./odonto.sh setup para criar o .env)
+#   docker compose restart           (aplica mudanças no config/odonto.yaml)
+# A variável PORTA do .env escolhe a porta publicada no host.
+name: agent-whatsapp-odonto-py
+
+services:
+  odonto:
+    build: .
+    image: agent-whatsapp-odonto-py:latest
+    container_name: agent-whatsapp-odonto-py
+    env_file: .env
+    ports:
+      - "${PORTA:-8080}:8080"
+    volumes:
+      - dados:/var/lib/postgresql
+      - ./config:/app/config:ro
+    restart: unless-stopped
+    stop_grace_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  dados:
+    name: agent-whatsapp-odonto-py-dados
