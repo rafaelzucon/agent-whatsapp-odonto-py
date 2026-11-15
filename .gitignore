@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Ferramentas
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.import_linter_cache/
+.coverage
+htmlcov/
+
+# Segredos e dados locais
+.env
+.env.*
+!.env.example
+backups/
+*.dump
+
+# Editores e sistema
+.idea/
+.vscode/
+.DS_Store

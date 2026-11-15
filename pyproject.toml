@@ -1,0 +1,209 @@
+[project]
+name = "agent-whatsapp-odonto-py"
+version = "1.0.0"
+description = "Agente de WhatsApp para consultório odontológico: identificação pelo RG, cadastro, triagem da queixa e agendamento."
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+license = "LicenseRef-Proprietario"
+authors = [{ name = "Rafael Zucon" }]
+classifiers = [
+    "Private :: Do Not Upload",
+    "Programming Language :: Python :: 3.14",
+    "Framework :: FastAPI",
+    "Natural Language :: Portuguese (Brazilian)",
+]
+dependencies = [
+    "fastapi>=0.163,<1",
+    "uvicorn[standard]>=0.54,<1",
+    "pydantic>=2.14,<3",
+    "pydantic-settings[yaml]>=2.16,<3",
+    "pyyaml>=6.0,<7",
+    "sqlalchemy[asyncio]>=2.1,<3",
+    "psycopg[binary]>=3.3,<4",
+    "alembic>=1.20,<2",
+    "anthropic>=2.8,<3",
+    "openai>=3.51,<4",
+    "httpx>=0.28,<1",
+    "apscheduler>=3.11,<4",
+    "aiosmtplib>=5.1,<6",
+    "cryptography>=50.0,<51",
+    # tzdata usa versionamento por calendário (AAAA.N); sem limite superior para receber
+    # atualizações de fusos horários.
+    "tzdata>=2026.6",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17,<1",
+    "mypy>=2.4,<3",
+    "pytest>=9.2,<10",
+    "pytest-asyncio>=1.5,<2",
+    "respx>=0.23,<1",
+    "import-linter>=2.16,<3",
+    "types-pyyaml>=6.0.12,<7",
+]
+
+[project.scripts]
+odonto = "odonto.infraestrutura.servidor:executar"
+
+[build-system]
+requires = ["uv_build>=0.13.8,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.uv.build-backend]
+module-name = "odonto"
+
+# ---------------------------------------------------------------------------
+# Ruff (lint e formatação)
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+src = ["src", "tests"]
+extend-exclude = ["alembic/versions/__pycache__"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "N", "UP", "B", "SIM", "C4", "RUF", "ASYNC", "DTZ", "PT", "S", "T20",
+    "RET", "PIE", "PERF", "TC",
+]
+ignore = [
+    "N818",   # nomes de exceção seguem o domínio (ex.: ErroDominio), não exigem sufixo Error
+    "RUF001", # textos em português usam caracteres acentuados legítimos
+    "RUF002",
+    "RUF003",
+    "S105",   # nomes como "token" em constantes de configuração não são segredos
+    "TC001",  # imports usados só em anotações podem ficar no topo (anotações adiadas no 3.14)
+    "TC002",
+    "TC003",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S311", "PLR2004", "DTZ001"]
+"alembic/**" = ["N999", "S608"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["odonto", "tests"]
+
+[tool.ruff.format]
+quote-style = "double"
+docstring-code-format = true
+
+# ---------------------------------------------------------------------------
+# mypy: modo strict em todo o pacote (obrigatório em dominio e aplicacao)
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.14"
+files = ["src"]
+mypy_path = "src"
+strict = true
+warn_unreachable = true
+plugins = ["pydantic.mypy"]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+[[tool.mypy.overrides]]
+module = ["apscheduler.*", "respx.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = ["-ra", "--strict-markers", "--strict-config"]
+markers = [
+    "arquitetura: verificações de dependência entre camadas (import-linter)",
+]
+filterwarnings = ["error::pytest.PytestUnraisableExceptionWarning"]
+
+# ---------------------------------------------------------------------------
+# import-linter: contratos da Clean Architecture (seção "Arquitetura" do README)
+# ---------------------------------------------------------------------------
+[tool.importlinter]
+root_packages = ["odonto"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+id = "camadas"
+name = "Regra de dependência: infraestrutura -> adaptador -> aplicacao -> dominio"
+type = "layers"
+layers = [
+    "odonto.infraestrutura",
+    "odonto.adaptador",
+    "odonto.aplicacao",
+    "odonto.dominio",
+]
+
+[[tool.importlinter.contracts]]
+id = "nucleo-sem-terceiros"
+name = "Domínio e aplicação usam só a biblioteca padrão"
+type = "forbidden"
+source_modules = ["odonto.dominio", "odonto.aplicacao"]
+forbidden_modules = [
+    "fastapi", "starlette", "pydantic", "pydantic_settings", "pydantic_core", "sqlalchemy",
+    "alembic", "psycopg", "httpx", "httpx2", "anthropic", "openai", "apscheduler", "aiosmtplib",
+    "cryptography", "yaml", "uvicorn",
+]
+
+[[tool.importlinter.contracts]]
+id = "adaptadores-independentes"
+name = "Adaptadores de entrada e de saída não se importam"
+type = "independence"
+modules = ["odonto.adaptador.entrada", "odonto.adaptador.saida"]
+
+[[tool.importlinter.contracts]]
+id = "sqlalchemy-isolado"
+name = "Só a persistência (e a infraestrutura) importam sqlalchemy"
+type = "forbidden"
+source_modules = [
+    "odonto.dominio", "odonto.aplicacao", "odonto.adaptador.entrada",
+    "odonto.adaptador.saida.ia", "odonto.adaptador.saida.transcricao",
+    "odonto.adaptador.saida.whatsapp", "odonto.adaptador.saida.notificacao",
+    "odonto.adaptador.saida.fila", "odonto.adaptador.saida.relogio",
+]
+forbidden_modules = ["sqlalchemy", "alembic", "psycopg"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+id = "anthropic-isolado"
+name = "Só o adaptador de IA importa anthropic"
+type = "forbidden"
+source_modules = [
+    "odonto.dominio", "odonto.aplicacao", "odonto.adaptador.entrada",
+    "odonto.adaptador.saida.persistencia", "odonto.adaptador.saida.transcricao",
+    "odonto.adaptador.saida.whatsapp", "odonto.adaptador.saida.notificacao",
+    "odonto.adaptador.saida.fila", "odonto.adaptador.saida.relogio", "odonto.infraestrutura",
+]
+forbidden_modules = ["anthropic"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+id = "openai-isolado"
+name = "Só o adaptador de transcrição importa openai"
+type = "forbidden"
+source_modules = [
+    "odonto.dominio", "odonto.aplicacao", "odonto.adaptador.entrada",
+    "odonto.adaptador.saida.persistencia", "odonto.adaptador.saida.ia",
+    "odonto.adaptador.saida.whatsapp", "odonto.adaptador.saida.notificacao",
+    "odonto.adaptador.saida.fila", "odonto.adaptador.saida.relogio", "odonto.infraestrutura",
+]
+forbidden_modules = ["openai"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+id = "web-so-portas"
+name = "Routers web conhecem só as portas de entrada, nunca os casos de uso"
+type = "forbidden"
+source_modules = ["odonto.adaptador.entrada.web"]
+forbidden_modules = ["odonto.aplicacao.casos_de_uso"]
