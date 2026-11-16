@@ -19,7 +19,8 @@ autônomo: as respostas ao paciente são textos fixos e configuráveis. A IA (Cl
 ("amanhã à tarde", "sexta às 10h") quando o interpretador local não entende. **Nenhuma
 orientação clínica é gerada por IA.** Áudios são transcritos (OpenAI) e tratados como texto.
 
-Diagramas: [docs/diagramas](docs/diagramas/README.md).
+Diagramas: [docs/diagramas](docs/diagramas/README.md). Este README em imagens verticais
+(1080 × 1920, tema escuro, para celular e divulgação): [docs/imagens](docs/imagens/README.md).
 
 ## Sumário
 
